@@ -1,0 +1,37 @@
+apply plugin: 'groovy'
+apply plugin: 'application'
+
+mainClassName = 'cascade.MavenCascadeRelease'
+buildDir = 'target'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	compile 'org.codehaus.groovy:groovy:2.4.10'
+	compile 'org.codehaus.groovy:groovy-json:2.4.10'
+	compile 'org.codehaus.groovy:groovy-templates:2.4.10'
+	compile 'commons-cli:commons-cli:1.2'
+	compile 'org.yaml:snakeyaml:1.18'
+
+	testCompile 'junit:junit:4.12'
+	testCompile 'org.assertj:assertj-core:3.8.0'
+}
+
+task fatjar(type: Jar, dependsOn: [':compileJava', ':compileGroovy']) {
+	from files(sourceSets.main.output.classesDir)
+	from configurations.runtime.asFileTree.files.collect {zipTree(it)}
+
+	manifest {
+		attributes 'Main-Class': mainClassName
+	}
+}
+
+task wrapper(type: Wrapper) {
+	gradleVersion = '3.5'
+}
+
