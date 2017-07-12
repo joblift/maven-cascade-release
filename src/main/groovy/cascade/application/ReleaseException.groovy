@@ -1,4 +1,4 @@
-package cascade
+package cascade.application
 
 class ReleaseException extends RuntimeException {
 
