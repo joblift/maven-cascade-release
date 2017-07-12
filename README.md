@@ -1,11 +1,11 @@
-A groovy-applicationw which helps release a tree of dependent maven-projects, increasing the referenced dependencies and parent along the ways thru the found project-graph.
+A groovy-application which helps to release a tree of dependent maven-projects, updating the referenced dependencies and parent along the ways thru the found project-graph.
 
 ### Process
 - The application will search in the projects-dir for all maven projects.
 - It traverses the given project and all dependents found in the graph which are affected
-- First releases the start-project and stores the version
-- continous on the leafs, until all projects are released. Stores those versions and replaces/updates them as well
-- if an error occours the project will exit.
+- Determines the order of projects to be released, depending on the start-project
+- Verifies that each project is up-to-date with git, in the master branch and not dirty
+- Releases the projects. Updates the dependencies of released projects upfront. Stores the progress to continue if it breaks.
 
 ### Requirements & Assumptions
 - git, maven and java are in the PATH.
