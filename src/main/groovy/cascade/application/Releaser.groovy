@@ -20,7 +20,7 @@ class Releaser {
 
 	void release(ReleaseContext context, List<String> updateOnlyGroupIds) {
 		for (OrderedProject project : context.projects) {
-			if (project.isReleased()) {
+			if (!project.isReleased()) {
 				File workingDirectory = new File(context.getProjectsDirectory(), project.getDirectoryName())
 				updateDependencies(context, project, workingDirectory)
 				if (!updateOnlyGroupIds.contains(project.groupId)) {
