@@ -23,7 +23,7 @@ A groovy-application which helps to release a tree of dependent maven-projects, 
 ### Additional arguments
 
 * `-i` Define the version increment, possible values are: major, minor, patch (default)
-* `-f` will filter projects with the given groupId. Multiple groups can be separated by `,`
+* `-g` Only projects with the groupId of the start-project will be analyzed, additional groupIds can be passed comma-separated using this argument.
 * `-u` will not release projects with the given groupId, put update the dependencies in the pom file
 * `-h` print the usage help
 

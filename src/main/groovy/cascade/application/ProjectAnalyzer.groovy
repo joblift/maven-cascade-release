@@ -9,7 +9,7 @@ import java.util.stream.Collectors
 /** Determines the dependency graph and order of affected projects */
 class ProjectAnalyzer {
 
-	List<Project> collect(String directory, List<String> filteredGroupIds) {
+	List<Project> collect(String directory) {
 		List<Project> result = []
 		new File(directory).eachFile {
 			if (it.isDirectory()) {
@@ -17,10 +17,7 @@ class ProjectAnalyzer {
 				if (filePom.exists()) {
 					String pomContent = filePom.getText("UTF-8")
 					def pomXml = new XmlSlurper().parseText(pomContent)
-					Project project = new Project(it.name, pomContent, pomXml)
-					if (!filteredGroupIds.contains(project.groupId)) {
-						result << project
-					}
+					result << new Project(it.name, pomContent, pomXml)
 				}
 			}
 		}
@@ -34,7 +31,7 @@ class ProjectAnalyzer {
 		projects.forEach {project ->
 			String projectName = project.getProjectName()
 			if (lookup.containsKey(projectName)) {
-				throw new ReleaseException("project '$projectName' found twice")
+				throw new ReleaseException("Project '${projectName}' found twice")
 			}
 			lookup.put(projectName, project)
 		}
@@ -63,6 +60,14 @@ class ProjectAnalyzer {
 			throw new ReleaseException("Could not find start-project")
 		}
 		return result
+	}
+
+
+	List<String> filterProjects(List<Project> projects, Project projectStart, List<String> additionalGroupIds) {
+		List<String> validGroupIds = [projectStart.groupId] + additionalGroupIds
+		return projects.stream()
+			.filter {project -> validGroupIds.contains(project.groupId)}
+			.collect(Collectors.toList())
 	}
 
 

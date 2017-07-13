@@ -33,8 +33,8 @@ class MavenCascadeRelease {
 			if (Log.ask("Continue with release?", "y", "n")) {
 				new Releaser().release(context, options.updateOnlyGroupIds)
 				context.cleanup()
+				printReleaseOrder(context.projects, "Finished releasing projects")
 			}
-			printReleaseOrder(context.projects, "Finished releasing projects")
 		}
 		catch (Exception ex) {
 			println ""
@@ -86,9 +86,10 @@ class MavenCascadeRelease {
 		else {
 			result = new ReleaseContext(projectsDirectory: options.projectsDirectory.getAbsolutePath(), projectStartDirectory: options.projectStartDirectory)
 			ProjectAnalyzer analyzer = new ProjectAnalyzer()
-			List<Project> projects = analyzer.collect(result.projectsDirectory, options.filteredGroupIds)
-			analyzer.analyzeDependencies(projects)
+			List<Project> projects = analyzer.collect(result.projectsDirectory)
 			Project projectStart = analyzer.determineStartProjects(projects, options.projectStartDirectory)
+			List<Project> projectsFiltered = analyzer.filterProjects(projects, projectStart, options.additionalGroupIds)
+			analyzer.analyzeDependencies(projectsFiltered)
 			List<OrderedProject> projectsOrdered = analyzer.generateReleaseOrder(projectStart, options.versionIncrement, options.updateOnlyGroupIds)
 			result.setProjects(projectsOrdered)
 			result.store()

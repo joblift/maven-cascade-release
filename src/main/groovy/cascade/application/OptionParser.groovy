@@ -10,22 +10,25 @@ class OptionParser {
 		File projectsDirectory = determineProjectsDirectory(map)
 		String projectDirectoryStart = determineProjectDirectoryStart(map)
 		String versionIncrement = determineVersionIncrement(map)
-		List<String> filteredGroupIds = determineGroupIds(map?.f)
+		List<String> additionalGroupIds = determineGroupIds(map?.g)
 		List<String> updateOnlyGroupIds = determineGroupIds(map?.u)
 
 		return new Options(projectsDirectory: projectsDirectory, projectStartDirectory: projectDirectoryStart, versionIncrement: versionIncrement,
-			verbose: map.verbose, filteredGroupIds: filteredGroupIds, updateOnlyGroupIds: updateOnlyGroupIds)
+			verbose: map.verbose, additionalGroupIds: additionalGroupIds, updateOnlyGroupIds: updateOnlyGroupIds)
 	}
 
 
 	private Map<String, Object> readArguments(String[] args) {
-		def cli = new CliBuilder(usage: 'script.sh [options] <projects-directory> <start-project>', header: 'Options:')
-		cli.p(longOpt: 'projects-directory', 'The directory where all repositories are', required: true, args: 1);
-		cli.s(longOpt: 'start-project', 'The project-directory from which the release-graph should start', required: true, args: 1);
+		def cli = new CliBuilder(usage: 'cascade-release [options] <projects-directory> <start-project>', header: 'Options:')
+		cli.p(longOpt: 'projects-directory', 'The directory where all repositories are.', required: true, args: 1);
+		cli.s(longOpt: 'start-project', 'The project-directory from which the release-graph should start.', required: true, args: 1);
 
-		cli.i(longOpt: 'increment-version', 'Available options: major, minor, patch (default)', required: false, args: 1)
-		cli.f(longOpt: 'filter-groupid', 'Projects with this groupId will be ignored', required: false, args: 1)
-		cli.u(longOpt: 'update-only-groupid', 'The pom.xml file of matching projects will only be updated (not released)', required: false, args: 1);
+		cli.i(longOpt: 'increment-version', 'Available options: major, minor, patch (default).', required: false, args: 1)
+		cli.g(longOpt: 'additional-groupids',
+			'Only projects with the groupId of the start-project will be analyzed, additional groupIds can be passed comma-separated using this argument.',
+			required: false, args: 1)
+		cli.u(longOpt: 'update-only-groupid',
+			'The pom.xml file of matching projects with the passed comnma-separated groupIds will only be updated (not released).', required: false, args: 1);
 
 		cli.h(longOpt: 'help', 'usage information', required: false)
 		cli.v(longOpt: 'verbose', 'Verbose logging', required: false)

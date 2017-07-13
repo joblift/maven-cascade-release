@@ -6,7 +6,7 @@ class Options {
 	String projectStartDirectory
 	String versionIncrement
 	Boolean verbose
-	List<String> filteredGroupIds
+	List<String> additionalGroupIds
 	List<String> updateOnlyGroupIds
 
 }
