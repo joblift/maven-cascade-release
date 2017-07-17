@@ -5,7 +5,7 @@ A groovy-application which helps to release a tree of dependent maven-projects, 
 - It traverses the given project and all dependents found in the graph which are affected
 - Determines the order of projects to be released, depending on the start-project
 - Verifies that each project is up-to-date with git, in the master branch and not dirty
-- Releases the projects. Updates the dependencies of released projects upfront. Stores the progress to continue if it breaks.
+- Releases the projects. Updates the dependencies of released projects upfront. Stores the progress to continue if a release breaks.
 
 ### Requirements & Assumptions
 - git, maven and java are in the PATH.
@@ -18,15 +18,16 @@ A groovy-application which helps to release a tree of dependent maven-projects, 
 
 ### Basic usage
 
-    ./cascade-release -p <PROJECTS_DIR> -s <START-PROJECT>
+    cascade-release -p <PROJECTS_DIR> -s <START-PROJECT>
     
 ### Additional arguments
 
-* `-i` Define the version increment, possible values are: major, minor, patch (default)
+* `-i` Define the version increment, possible values are: `major`, `minor` & `patch` (default)
 * `-g` Only projects with the groupId of the start-project will be analyzed, additional groupIds can be passed comma-separated using this argument.
-* `-u` will not release projects with the given groupId, put update the dependencies in the pom file
-* `-h` print the usage help
+* `-u` Will not release projects with the given groupId, only the dependencies in the pom file will get updated instead.
+* `-h` Print the usage help
 
 ### Example
 
-    ./cascade-release -p $HOME/workspace -s my-lib
+    cascade-release -p $HOME/workspace -s my-lib
+
