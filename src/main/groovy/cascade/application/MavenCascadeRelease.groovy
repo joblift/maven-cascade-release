@@ -29,7 +29,7 @@ class MavenCascadeRelease {
 			options = new OptionParser().parse(args)
 			checkPath()
 			ReleaseContext context = prepareContextFile(options)
-			verifyProjects(context)
+			verifyProjects(context, options.skipVerify)
 			if (Log.ask("Continue with release?", "y", "n")) {
 				new Releaser().release(context, options.updateOnlyGroupIds)
 				context.cleanup()
@@ -46,9 +46,13 @@ class MavenCascadeRelease {
 	}
 
 
-	static void verifyProjects(ReleaseContext context) {
+	static void verifyProjects(ReleaseContext context, Boolean skipVerify) {
 		Shell shell = new Shell()
 		Log.info("Verifying projects up-to-date and not dirty")
+		if (skipVerify) {
+			Log.info("skipped ...")
+			return
+		}
 		for (OrderedProject project : context.projects) {
 			if (!project.isReleased()) {
 				print '.'

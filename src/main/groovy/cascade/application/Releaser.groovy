@@ -61,34 +61,34 @@ class Releaser {
 		List<String> pomLines = filePom.readLines("UTF-8")
 		for (int index = 0; index < pomLines.size(); index++) {
 			String line = pomLines.get(index)
-			if (line.trim() == "<parent>") {
+			if (line.contains('<parent>')) {
 				inParent = true
 				dependency = new Dependency()
 			}
-			else if (line.trim() == "</parent>") {
+			else if (line.contains('</parent>')) {
 				inParent = false
 				parent = dependency
 				dependency = null
 			}
-			else if (line.trim() == "<dependencies>") {
+			else if (line.contains('<dependencies>')) {
 				inDependencies = true
 			}
-			else if (line.trim() == "</dependencies>") {
+			else if (line.contains('</dependencies>')) {
 				inDependencies = false
 			}
-			else if (inDependencies && line.trim() == "<dependency>") {
+			else if (inDependencies && line.contains('<dependency>')) {
 				inDependency = true
 				dependency = new Dependency()
 			}
-			else if (inDependencies && line.trim() == "</dependency>") {
+			else if (inDependencies && line.contains('</dependency>')) {
 				inDependency = false
 				dependencies.add(dependency)
 				dependency = null
 			}
-			else if (line.trim() == "<exclusions>") {
+			else if (line.contains('<exclusions>')) {
 				inExclusions = true
 			}
-			else if (line.trim() == "</exclusions>") {
+			else if (line.contains('</exclusions>')) {
 				inExclusions = false
 			}
 			else if (!inExclusions) {
@@ -125,7 +125,7 @@ class Releaser {
 			filePom.write(pomLines.join('\n') + '\n')
 
 			shell.executeInline("git add pom.xml", workingDirectory)
-			shell.executeInline("git ci -m 'Updated dependencies for release ${project.versionNew()}'", workingDirectory)
+			shell.executeInline("git ci -m 'Updated dependencies for release ${project.versionNew() ?: 'from upstream'}'", workingDirectory)
 			shell.executeInline("git push", workingDirectory)
 			Log.info("Updated pom-file dependencies in ${project.directoryName}")
 		}

@@ -14,7 +14,7 @@ class OptionParser {
 		List<String> updateOnlyGroupIds = determineGroupIds(map?.u)
 
 		return new Options(projectsDirectory: projectsDirectory, projectStartDirectory: projectDirectoryStart, versionIncrement: versionIncrement,
-			verbose: map.verbose, additionalGroupIds: additionalGroupIds, updateOnlyGroupIds: updateOnlyGroupIds)
+			verbose: map.v, additionalGroupIds: additionalGroupIds, updateOnlyGroupIds: updateOnlyGroupIds, skipVerify: map.x)
 	}
 
 
@@ -32,6 +32,7 @@ class OptionParser {
 
 		cli.h(longOpt: 'help', 'usage information', required: false)
 		cli.v(longOpt: 'verbose', 'Verbose logging', required: false)
+		cli.x(longOpt: 'skip-verify', 'Will skip the git project verification', required: false)
 
 		try {
 			OptionAccessor opts = cli.parse(args)
