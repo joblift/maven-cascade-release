@@ -125,7 +125,7 @@ class Releaser {
 			filePom.write(pomLines.join('\n') + '\n')
 
 			shell.executeInline("git add pom.xml", workingDirectory)
-			shell.executeInline("git ci -m 'Updated dependencies for release ${project.versionNew() ?: 'from upstream'}'", workingDirectory)
+			shell.executeInline("git commit -m 'Updated dependencies for release ${project.versionNew() ?: 'from upstream'}'", workingDirectory)
 			shell.executeInline("git push", workingDirectory)
 			Log.info("Updated pom-file dependencies in ${project.directoryName}")
 		}
