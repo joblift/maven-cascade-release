@@ -9,5 +9,6 @@ class Options {
 	Boolean skipVerify
 	List<String> additionalGroupIds
 	List<String> updateOnlyGroupIds
+	List<String> excludedDirectories
 
 }

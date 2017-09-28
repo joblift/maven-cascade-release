@@ -9,10 +9,10 @@ import java.util.stream.Collectors
 /** Determines the dependency graph and order of affected projects */
 class ProjectAnalyzer {
 
-	List<Project> collect(String directory) {
+	List<Project> collect(String directory, List<String> excludedDirectories) {
 		List<Project> result = []
 		new File(directory).eachFile {
-			if (it.isDirectory()) {
+			if (it.isDirectory() && !excludedDirectories.contains(it.name)) {
 				def filePom = new File(it, "pom.xml")
 				if (filePom.exists()) {
 					String pomContent = filePom.getText("UTF-8")

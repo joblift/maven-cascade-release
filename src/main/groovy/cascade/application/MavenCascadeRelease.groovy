@@ -90,7 +90,7 @@ class MavenCascadeRelease {
 		else {
 			result = new ReleaseContext(projectsDirectory: options.projectsDirectory.getAbsolutePath(), projectStartDirectory: options.projectStartDirectory)
 			ProjectAnalyzer analyzer = new ProjectAnalyzer()
-			List<Project> projects = analyzer.collect(result.projectsDirectory)
+			List<Project> projects = analyzer.collect(result.projectsDirectory, options.excludedDirectories)
 			Project projectStart = analyzer.determineStartProjects(projects, options.projectStartDirectory)
 			List<Project> projectsFiltered = analyzer.filterProjects(projects, projectStart, options.additionalGroupIds)
 			analyzer.analyzeDependencies(projectsFiltered)

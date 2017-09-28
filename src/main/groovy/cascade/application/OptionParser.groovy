@@ -12,9 +12,11 @@ class OptionParser {
 		String versionIncrement = determineVersionIncrement(map)
 		List<String> additionalGroupIds = determineGroupIds(map?.g)
 		List<String> updateOnlyGroupIds = determineGroupIds(map?.u)
+		List<String> excludedDirectories = determineExcludedDirectories(map?.e)
 
 		return new Options(projectsDirectory: projectsDirectory, projectStartDirectory: projectDirectoryStart, versionIncrement: versionIncrement,
-			verbose: map.v, additionalGroupIds: additionalGroupIds, updateOnlyGroupIds: updateOnlyGroupIds, skipVerify: map.x)
+			verbose: map.v, additionalGroupIds: additionalGroupIds, updateOnlyGroupIds: updateOnlyGroupIds, excludedDirectories: excludedDirectories,
+			skipVerify: map.x)
 	}
 
 
@@ -29,6 +31,8 @@ class OptionParser {
 			required: false, args: 1)
 		cli.u(longOpt: 'update-only-groupid',
 			'The pom.xml file of matching projects with the passed comnma-separated groupIds will only be updated (not released).', required: false, args: 1);
+
+		cli.e(longOpt: 'exclude', 'Comma separated list of directory-names, that should be ignored', required: false, args: 1);
 
 		cli.h(longOpt: 'help', 'usage information', required: false)
 		cli.v(longOpt: 'verbose', 'Verbose logging', required: false)
@@ -97,6 +101,16 @@ class OptionParser {
 
 
 	private List<String> determineGroupIds(String text) {
+		return splitByComma(text)
+	}
+
+
+	private determineExcludedDirectories(String text) {
+		return splitByComma(text)
+	}
+
+
+	private List<String> splitByComma(String text) {
 		List<String> result = []
 		if (text) {
 			text.tokenize(',').forEach {result.add(it)}
