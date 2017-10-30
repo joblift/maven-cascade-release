@@ -14,7 +14,11 @@ class ReleaseContext {
 
 
 	static ReleaseContext fromFile(File file) {
-		return new JsonSlurper().parse(file, "UTF-8")
+		ReleaseContext map = new JsonSlurper().parse(file, "UTF-8")
+		// create correct object from crappy internal groovy map representation
+		return new ReleaseContext(projectsDirectory: map.projectsDirectory,
+			projectStartDirectory: map.projectStartDirectory,
+			projects: map.projects.collect {new OrderedProject(it)})
 	}
 
 
