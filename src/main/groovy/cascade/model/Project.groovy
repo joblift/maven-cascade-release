@@ -10,10 +10,12 @@ class Project {
 	transient String pomContent
 	transient def pomXml
 
+	// the single optional parent
 	transient Project parent
-	// dependants from a parent pom
+	// dependants from a parent pom (other parents as well as projects)
 	transient List<Project> childs = []
-	// dependencies fromthis project
+
+	// dependencies from this project
 	transient List<Project> dependencies = []
 	// projects that depend from this project
 	transient List<Project> dependants = []

@@ -26,7 +26,7 @@ class ProjectAnalyzer {
 
 
 	void analyzeDependencies(List<Project> projects) {
-		// collect projects by group/artifact
+		// create projects index by group/artifact
 		Map<String, Project> lookup = [:]
 		projects.forEach {project ->
 			String projectName = project.getProjectName()
