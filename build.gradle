@@ -24,6 +24,7 @@ dependencies {
 }
 
 task fatjar(type: Jar, dependsOn: [':compileJava', ':compileGroovy']) {
+	baseName = 'maven-cascade-release.jar'
 	from files(sourceSets.main.output.classesDir)
 	from configurations.runtime.asFileTree.files.collect {zipTree(it)}
 
