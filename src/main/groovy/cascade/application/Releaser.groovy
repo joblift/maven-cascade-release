@@ -21,12 +21,17 @@ class Releaser {
 	void release(ReleaseContext context, List<String> updateOnlyGroupIds) {
 		for (OrderedProject project : context.projects) {
 			if (!project.isReleased()) {
+				project.verified = false // toggle because release might change the state
+				context.store()
+
 				File workingDirectory = new File(context.getProjectsDirectory(), project.getDirectoryName())
 				updateDependencies(context, project, workingDirectory)
 				if (!updateOnlyGroupIds.contains(project.groupId)) {
 					releaseProject(context, project, workingDirectory)
 				}
+
 				project.released = true
+				project.verified = true
 				context.store()
 			}
 		}

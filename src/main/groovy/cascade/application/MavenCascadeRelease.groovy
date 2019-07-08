@@ -54,7 +54,7 @@ class MavenCascadeRelease {
 			return
 		}
 		for (OrderedProject project : context.projects) {
-			if (!project.isReleased()) {
+			if (!project.isVerified()) {
 				print '.'
 				File workingDirectory = new File(context.projectsDirectory, project.directoryName)
 				// check branch is master
@@ -75,7 +75,9 @@ class MavenCascadeRelease {
 				if (behind > 0) {
 					throw new ReleaseException("Project ${project.directoryName} is ${behind} commits behind")
 				}
+				project.verified = true
 			}
+			context.store()
 		}
 		println ''
 	}
@@ -123,7 +125,7 @@ class MavenCascadeRelease {
 			new Shell().execute('mvn --version')
 		}
 		catch (Exception ex) {
-			throw new ReleaseException("Missing git or mvn in PATH. PATH=${System.getenv("PATH")}")
+			throw new ReleaseException("The executables for git and mvn must be available in the PATH. Failed verification. Current PATH=${System.getenv("PATH")}")
 		}
 	}
 

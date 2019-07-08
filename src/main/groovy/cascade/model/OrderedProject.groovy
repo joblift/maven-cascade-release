@@ -16,6 +16,9 @@ class OrderedProject {
 	boolean released
 	boolean updateOnly
 
+	/** State if project is on master, not dirty and not behind. */
+	boolean verified
+
 
 	String versionNew() {
 		if (updateOnly) {
