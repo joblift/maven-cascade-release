@@ -54,7 +54,10 @@ class MavenCascadeRelease {
 			return
 		}
 		for (OrderedProject project : context.projects) {
-			if (!project.isVerified()) {
+			if (project.isVerified()) {
+				print '*'
+			}
+			else {
 				print '.'
 				File workingDirectory = new File(context.projectsDirectory, project.directoryName)
 				// check branch is master
