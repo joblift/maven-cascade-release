@@ -12,5 +12,6 @@ gradlew.bat
 /.idea/uiDesigner.xml
 /.gradle/
 /build/
+/bin
 
 

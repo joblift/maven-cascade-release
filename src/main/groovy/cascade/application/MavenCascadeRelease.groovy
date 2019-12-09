@@ -16,8 +16,8 @@ import cascade.util.Shell
  * - store progress file
  * - print affected graph/next versions
  * - start releases in order, for each
- *   - update pom.xml (if dependencies changed)
- *   - release maven project
+ *   - update pom.xml and commit/push (if dependencies changed)
+ *   - release maven project (if not update)
  *   - store progress
  * - cleanup progress
  */
@@ -30,7 +30,7 @@ class MavenCascadeRelease {
 			checkPath()
 			ReleaseContext context = prepareContextFile(options)
 			verifyProjects(context, options.skipVerify)
-			if (Log.ask("Continue with release?", "y", "n")) {
+			if (options.skipPostVerificationQuestion || Log.ask("Continue with release?", "y", "n")) {
 				new Releaser().release(context, options.updateOnlyGroupIds)
 				context.cleanup()
 				printReleaseOrder(context.projects, "Finished releasing projects")
@@ -89,7 +89,8 @@ class MavenCascadeRelease {
 	static ReleaseContext prepareContextFile(Options options) {
 		ReleaseContext result
 		File contextFile = new File(options.projectsDirectory, ReleaseContext.FILE_NAME)
-		if (contextFile.exists() && Log.ask("Found interupted cascade-release context. Continue with started release?", "y", "n")) {
+
+		if (determineResumeRelease(contextFile, options)) {
 			result = ReleaseContext.fromFile(contextFile)
 		}
 		else {
@@ -105,6 +106,20 @@ class MavenCascadeRelease {
 		}
 		printReleaseOrder(result.getProjects(), "Projects will be released in the following order")
 		return result
+	}
+
+
+	static boolean determineResumeRelease(File contextFile, Options options) {
+		boolean resumeRelease = false
+		if (contextFile.exists()) {
+			if (options.skipInterruptedQuestion != null) {
+				resumeRelease = options.skipInterruptedQuestion
+			}
+			else {
+				resumeRelease = Log.ask("Found interupted cascade-release context. Continue with started release?", "y", "n")
+			}
+		}
+		return resumeRelease
 	}
 
 
