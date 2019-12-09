@@ -5,6 +5,8 @@ class Options {
 	File projectsDirectory
 	String projectStartDirectory
 	String versionIncrement
+	String message
+	Boolean mr
 	Boolean verbose
 	Boolean skipVerify
 	Boolean skipPostVerificationQuestion
@@ -12,5 +14,9 @@ class Options {
 	List<String> additionalGroupIds
 	List<String> updateOnlyGroupIds
 	List<String> excludedDirectories
+
+	public String prefixMessage() {
+		message ? message + " " : ""
+	}
 
 }

@@ -16,17 +16,21 @@ class Releaser {
 	static final Pattern PATTERN_ARTIFACTID = ~/[ \t]*<artifactId>(.*)<\/artifactId>[ \t]*/
 
 	Shell shell = new Shell()
+	String branchName = new Date().format("yyyy-MM-dd_HH-mm-ss") + "_" + System.getProperty("user.name").replaceAll("/[^A-Za-z0-9]/", "");
 
 
-	void release(ReleaseContext context, List<String> updateOnlyGroupIds) {
+
+	void release(ReleaseContext context, List<String> updateOnlyGroupIds, String message, Boolean mr) {
 		for (OrderedProject project : context.projects) {
 			if (!project.isReleased()) {
 				project.verified = false // toggle because release might change the state
 				context.store()
 
+				boolean updateOnly = updateOnlyGroupIds.contains(project.groupId)
+
 				File workingDirectory = new File(context.getProjectsDirectory(), project.getDirectoryName())
-				updateDependencies(context, project, workingDirectory)
-				if (!updateOnlyGroupIds.contains(project.groupId)) {
+				updateDependencies(context, project, workingDirectory, message, updateOnly && mr)
+				if (!updateOnly) {
 					releaseProject(context, project, workingDirectory)
 				}
 
@@ -52,7 +56,7 @@ class Releaser {
 	}
 
 
-	private void updateDependencies(ReleaseContext context, OrderedProject project, File workingDirectory) {
+	private void updateDependencies(ReleaseContext context, OrderedProject project, File workingDirectory, String message, Boolean createMr) {
 		File filePom = new File(workingDirectory, "pom.xml")
 
 		boolean inParent
@@ -129,9 +133,22 @@ class Releaser {
 			// generate and store file
 			filePom.write(pomLines.join('\n') + '\n')
 
+			String ref = createMr ? "cascade/${branchName}" : "master"
+			if (createMr) {
+				shell.executeInline("git checkout -b \"${ref}\"", workingDirectory)
+			}
+
 			shell.executeInline("git add pom.xml", workingDirectory)
-			shell.executeInline("git commit -m 'Updated dependencies for release ${project.versionNew() ?: 'from upstream'}'", workingDirectory)
-			shell.executeInline("git push", workingDirectory)
+			shell.executeInline("git commit -m '${message}Updated dependencies for release ${project.versionNew() ?: 'from upstream'}'", workingDirectory)
+			shell.executeInline("git push origin ${ref}", workingDirectory)
+			
+			if (createMr) {
+				// TODO assign to people in repo.yaml
+				String mrUrl = shell.execute("lab mr create -m \"${message} - merge-request\" -d", workingDirectory)
+				Log.info("Created merge-request: ${mrUrl}")
+				shell.executeInline("git checkout master", workingDirectory)
+			}
+
 			Log.info("Updated pom-file dependencies in ${project.directoryName}")
 		}
 		else {

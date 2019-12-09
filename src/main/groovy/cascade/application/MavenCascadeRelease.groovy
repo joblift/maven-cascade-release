@@ -27,11 +27,12 @@ class MavenCascadeRelease {
 		Options options
 		try {
 			options = new OptionParser().parse(args)
-			checkPath()
+			checkEnvironment(options)
 			ReleaseContext context = prepareContextFile(options)
 			verifyProjects(context, options.skipVerify)
+			checkEnvironment(options)
 			if (options.skipPostVerificationQuestion || Log.ask("Continue with release?", "y", "n")) {
-				new Releaser().release(context, options.updateOnlyGroupIds)
+				new Releaser().release(context, options.updateOnlyGroupIds, options.prefixMessage(), options.mr)
 				context.cleanup()
 				printReleaseOrder(context.projects, "Finished releasing projects")
 			}
@@ -137,13 +138,21 @@ class MavenCascadeRelease {
 	}
 
 
-	static void checkPath() {
+	static void checkEnvironment(Options options) {
 		try {
 			new Shell().execute('git --version')
 			new Shell().execute('mvn --version')
 		}
 		catch (Exception ex) {
 			throw new ReleaseException("The executables for git and mvn must be available in the PATH. Failed verification. Current PATH=${System.getenv("PATH")}")
+		}
+		try {
+			if (options.mr) {
+				new Shell().execute('lab --version')
+			}
+		}
+		catch (Exception ex) {
+			throw new ReleaseException("To be able to create a merge-request the executables for lab (https://github.com/zaquestion/lab) must be available in the PATH. Failed verification. Current PATH=${System.getenv("PATH")}")
 		}
 	}
 

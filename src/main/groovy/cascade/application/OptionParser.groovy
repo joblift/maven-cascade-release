@@ -17,7 +17,8 @@ class OptionParser {
 
 		return new Options(projectsDirectory: projectsDirectory, projectStartDirectory: projectDirectoryStart, versionIncrement: versionIncrement,
 			verbose: map.v, additionalGroupIds: additionalGroupIds, updateOnlyGroupIds: updateOnlyGroupIds, excludedDirectories: excludedDirectories,
-			skipVerify: map.x, skipPostVerificationQuestion: map.q, skipInterruptedQuestion: skipInterruptedQuestion)
+			skipVerify: map.x, skipPostVerificationQuestion: map.q, skipInterruptedQuestion: skipInterruptedQuestion,
+			message: map.m, mr: map.t)
 	}
 
 
@@ -25,6 +26,8 @@ class OptionParser {
 		def cli = new CliBuilder(usage: 'cascade-release [options] <projects-directory> <start-project>', header: 'Options:')
 		cli.p(longOpt: 'projects-directory', 'The directory where all repositories are.', required: true, args: 1)
 		cli.s(longOpt: 'start-project', 'The project-directory from which the release-graph should start.', required: true, args: 1)
+		cli.m(longOpt: 'message', 'Message, that will be used as prefix in commits.', required: false, args: 1)
+		cli.t(longOpt: 'mr', 'Will create a merge-request for projects that are updated only (instead of pushing to master). Uses https://github.com/zaquestion/lab.', required: false)
 
 		cli.i(longOpt: 'increment-version', 'Available options: major, minor, patch (default).', required: false, args: 1)
 		cli.g(longOpt: 'additional-groupids',
