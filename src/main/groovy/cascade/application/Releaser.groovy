@@ -144,7 +144,8 @@ class Releaser {
 			
 			if (createMr) {
 				// TODO assign to people in repo.yaml
-				String mrUrl = shell.execute("lab mr create -m \"${message} - merge-request\" -d", workingDirectory)
+				String username = LabSupport.getUsername()
+				String mrUrl = shell.execute("lab mr create -m \"${message} - merge-request\" -d -a \"${username}\"", workingDirectory)
 				Log.info("Created merge-request: ${mrUrl}")
 				shell.executeInline("git checkout master", workingDirectory)
 			}

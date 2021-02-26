@@ -18,6 +18,7 @@ dependencies {
 	compile 'commons-cli:commons-cli:1.2'
 	compile 'org.yaml:snakeyaml:1.18'
 	compile 'com.github.zafarkhaja:java-semver:0.9.0'
+	compile 'com.moandjiezana.toml:toml4j:0.7.2'
 
 	testCompile 'junit:junit:4.12'
 	testCompile 'org.assertj:assertj-core:3.8.0'

@@ -149,16 +149,22 @@ class MavenCascadeRelease {
 		try {
 			if (options.mr) {
 				new Shell().execute('which lab')
-				File labConfigurationFile = new File("${System.getProperty("user.home")}/.config/lab.hcl")
-				if (!labConfigurationFile.exists()) {
-					println "Did not found lab configuration file '${labConfigurationFile}'"
-					throw new Exception("No configuration for lab available");
-				}
 				//new Shell().execute('lab --version') // could hang on first lab start, due to asking for user-input
 			}
 		}
 		catch (Exception ex) {
 			throw new ReleaseException("To be able to create a merge-request the executables for lab (https://github.com/zaquestion/lab) must be available in the PATH and setup. Failed verification. Current PATH=${System.getenv("PATH")}")
+		}
+
+		if (options.mr) {
+			if (!LabSupport.configExists()) {
+				println "Did not found lab configuration file"
+				throw new Exception("No configuration file for lab available, please initialize lab first");
+			}
+			if (!LabSupport.getUsername()) {
+				println "Did not found lab configuration username"
+				throw new Exception("No username configuration for lab available");
+			}
 		}
 	}
 
