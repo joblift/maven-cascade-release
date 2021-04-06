@@ -10,7 +10,7 @@ class Shell {
 
 	/** Executes the command and returns the completed output */
 	String execute(String command, File workingDir) throws ShellException {
-		Log.debug("Performing command '${command}'") // in '${workingDir}'
+		Log.debug("Performing command: '${command}'") // in '${workingDir}'
 		def process = new ProcessBuilder(['sh', '-c', command])
 				.directory(workingDir)
 				.start()
@@ -43,7 +43,7 @@ class Shell {
 
 	/** Executes the comand and writes the output from the process directly to System out/err */
 	void executeInline(String command, File workingDir) throws ShellException {
-		Log.debug("Performing command '${command}'") // in '${workingDir}'")
+		Log.debug("Performing command: '${command}'") // in '${workingDir}'")
 		def process = new ProcessBuilder(['sh', '-c', command])
 				.directory(workingDir)
 				.start()

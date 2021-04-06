@@ -55,7 +55,10 @@ class OptionParser {
 				cli.usage()
 				System.exit(3)
 			}
-
+			if (opts.v) {
+				Log.enableDebug(true)
+			}
+			
 			Map<String, String> collectedOptions = cli.options.getOptions()
 				.findAll({opts[it.key]})
 				.collectEntries({
