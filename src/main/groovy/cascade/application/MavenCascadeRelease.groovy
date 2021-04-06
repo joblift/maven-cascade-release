@@ -30,9 +30,8 @@ class MavenCascadeRelease {
 			checkEnvironment(options)
 			ReleaseContext context = prepareContextFile(options)
 			verifyProjects(context, options.skipVerify)
-			checkEnvironment(options)
 			if (options.skipPostVerificationQuestion || Log.ask("Continue with release?", "y", "n")) {
-				new Releaser().release(context, options.updateOnlyGroupIds, options.prefixMessage(), options.mr)
+				new Releaser().release(context, options.updateOnlyGroupIds, options.prefixMessage(), options.mr, options.mrAutomerge, options.mrUsername)
 				context.cleanup()
 				printReleaseOrder(context.projects, "Finished releasing projects")
 			}
@@ -145,26 +144,6 @@ class MavenCascadeRelease {
 		}
 		catch (Exception ex) {
 			throw new ReleaseException("The executables for git and mvn must be available in the PATH. Failed verification. Current PATH=${System.getenv("PATH")}")
-		}
-		try {
-			if (options.mr) {
-				new Shell().execute('which lab')
-				//new Shell().execute('lab --version') // could hang on first lab start, due to asking for user-input
-			}
-		}
-		catch (Exception ex) {
-			throw new ReleaseException("To be able to create a merge-request the executables for lab (https://github.com/zaquestion/lab) must be available in the PATH and setup. Failed verification. Current PATH=${System.getenv("PATH")}")
-		}
-
-		if (options.mr) {
-			if (!LabSupport.configExists()) {
-				println "Did not found lab configuration file"
-				throw new Exception("No configuration file for lab available, please initialize lab first");
-			}
-			if (!LabSupport.getUsername()) {
-				println "Did not found lab configuration username"
-				throw new Exception("No username configuration for lab available");
-			}
 		}
 	}
 

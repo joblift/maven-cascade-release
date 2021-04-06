@@ -20,7 +20,7 @@ class Releaser {
 
 
 
-	void release(ReleaseContext context, List<String> updateOnlyGroupIds, String message, Boolean mr) {
+	void release(ReleaseContext context, List<String> updateOnlyGroupIds, String message, Boolean mr, Boolean mrAutomerge, String mrUsername) {
 		for (OrderedProject project : context.projects) {
 			if (!project.isReleased()) {
 				project.verified = false // toggle because release might change the state
@@ -29,7 +29,7 @@ class Releaser {
 				boolean updateOnly = updateOnlyGroupIds.contains(project.groupId)
 
 				File workingDirectory = new File(context.getProjectsDirectory(), project.getDirectoryName())
-				updateDependencies(context, project, workingDirectory, message, updateOnly && mr)
+				updateDependencies(context, project, workingDirectory, message, updateOnly && mr, mrAutomerge, mrUsername)
 				if (!updateOnly) {
 					releaseProject(context, project, workingDirectory)
 				}
@@ -56,7 +56,7 @@ class Releaser {
 	}
 
 
-	private void updateDependencies(ReleaseContext context, OrderedProject project, File workingDirectory, String message, Boolean createMr) {
+	private void updateDependencies(ReleaseContext context, OrderedProject project, File workingDirectory, String message, Boolean mrCreate, Boolean mrAutomerge, String mrUsername) {
 		File filePom = new File(workingDirectory, "pom.xml")
 
 		boolean inParent
@@ -133,20 +133,24 @@ class Releaser {
 			// generate and store file
 			filePom.write(pomLines.join('\n') + '\n')
 
-			String ref = createMr ? "cascade/${branchName}" : "master"
-			if (createMr) {
+			String ref = mrCreate ? "cascade/${branchName}" : "master"
+			String argMr = ""
+			if (mrCreate) {
 				shell.executeInline("git checkout -b \"${ref}\"", workingDirectory)
+				argMr += "-o merge_request.create -o merge_request.remove_source_branch -o merge_request.title=\"${message}cascade-release\""
+				if (mrUsername) {
+					argMr += " -o merge_request.assign=\"${mrUsername}\""
+				}
+				if (mrAutomerge) {
+					argMr += " -o merge_request.merge_when_pipeline_succeeds"
+				}
 			}
 
 			shell.executeInline("git add pom.xml", workingDirectory)
 			shell.executeInline("git commit -m '${message}Updated dependencies for release ${project.versionNew() ?: 'from upstream'}'", workingDirectory)
-			shell.executeInline("git push origin ${ref}", workingDirectory)
+			shell.executeInline("git push origin ${ref} ${argMr}", workingDirectory)
 			
-			if (createMr) {
-				// TODO assign to people in repo.yaml
-				String username = LabSupport.getUsername()
-				String mrUrl = shell.execute("lab mr create -m \"${message} - merge-request\" -d -a \"${username}\"", workingDirectory)
-				Log.info("Created merge-request: ${mrUrl}")
+			if (mrCreate) {
 				shell.executeInline("git checkout master", workingDirectory)
 			}
 

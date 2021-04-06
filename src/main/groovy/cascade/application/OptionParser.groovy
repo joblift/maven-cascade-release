@@ -1,6 +1,7 @@
 package cascade.application
 
 import org.apache.commons.cli.Option
+import cascade.util.Log
 
 class OptionParser {
 
@@ -18,7 +19,7 @@ class OptionParser {
 		return new Options(projectsDirectory: projectsDirectory, projectStartDirectory: projectDirectoryStart, versionIncrement: versionIncrement,
 			verbose: map.v, additionalGroupIds: additionalGroupIds, updateOnlyGroupIds: updateOnlyGroupIds, excludedDirectories: excludedDirectories,
 			skipVerify: map.x, skipPostVerificationQuestion: map.q, skipInterruptedQuestion: skipInterruptedQuestion,
-			message: map.m, mr: map.t)
+			message: map.m, mr: map.mr, mrAutomerge: map.ma, mrUsername: map.mu)
 	}
 
 
@@ -27,7 +28,9 @@ class OptionParser {
 		cli.p(longOpt: 'projects-directory', 'The directory where all repositories are.', required: true, args: 1)
 		cli.s(longOpt: 'start-project', 'The project-directory from which the release-graph should start.', required: true, args: 1)
 		cli.m(longOpt: 'message', 'Message, that will be used as prefix in commits.', required: false, args: 1)
-		cli.t(longOpt: 'mr', 'Will create a merge-request for projects that are updated only (instead of pushing to master). Uses https://github.com/zaquestion/lab.', required: false)
+		cli.mr(longOpt: 'mr-create', 'Will create a merge-request for projects that are updated only (instead of pushing to master).', required: false)
+		cli.ma(longOpt: 'mr-automerge', 'Will merge successful merge-requests automatically (only in conjunction with --mr, only Gitlab).', required: false)
+		cli.mu(longOpt: 'mr-user', 'Will assign the merge-request to the specified username (only in conjunction with --mr, only Gitlab).', required: false, args: 1)
 
 		cli.i(longOpt: 'increment-version', 'Available options: major, minor, patch (default).', required: false, args: 1)
 		cli.g(longOpt: 'additional-groupids',

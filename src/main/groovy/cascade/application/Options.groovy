@@ -7,6 +7,8 @@ class Options {
 	String versionIncrement
 	String message
 	Boolean mr
+	Boolean mrAutomerge
+	String mrUsername
 	Boolean verbose
 	Boolean skipVerify
 	Boolean skipPostVerificationQuestion
