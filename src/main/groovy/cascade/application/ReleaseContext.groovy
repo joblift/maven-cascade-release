@@ -23,7 +23,7 @@ class ReleaseContext {
 
 
 	void store() {
-		String json = JsonOutput.toJson(this)
+		String json = JsonOutput.prettyPrint(JsonOutput.toJson(this))
 		new File(projectsDirectory, FILE_NAME).write(json, "UTF-8")
 	}
 
